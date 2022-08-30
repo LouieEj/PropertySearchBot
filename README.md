@@ -2,13 +2,13 @@
 
 Bot which retrieves properties from Rightmove and sends them in to a Discord server's channel named "properties".
 
-## ------------------ SETUP ------------------
+## SETUP
 First, create a channel in your server called properties (make sure it is lower-case), otherwise the bot will not work.
 
 After that, you can add the bot to your server with this link: https://discord.com/api/oauth2/authorize?client_id=1014172898887471126&permissions=8&scope=bot
 
 
-## ------------------ CONFIGURE ------------------
+## CONFIGURE
 The bot works by going to the webpage from a URL the user must provide. Once at that webpage, the bot gets the information of any new properties and sends it in to the "properties" channel.
 
 The reason why a URL has to be used is explained further below in the LIMITATIONS section.
@@ -28,13 +28,13 @@ Example:
 > !update rightmove https://www.rightmove.co.uk/property-to-rent/find.html?locationIdentifier=REGION%5E198&maxBedrooms=8&minBedrooms=3&propertyTypes=&includeLetAgreed=false&mustHave=&dontShow=&furnishTypes=&keywords=
 
 
-## ------------------ COMMANDS ------------------
+## COMMANDS
 The bot uses the ! prefix before any command.
 
 All commands can be found by calling the !help command.
 
 
-### ------------------ LIMITATIONS ------------------
+### LIMITATIONS
 The main limitation of the bot is that the user has to manually copy-and-paste a URL from a search query on Rightmove's website, which is a bit tedious. This is because Rightmove has its own form of coding for Postcodes, Regions, and Areas. This means that programatically the URL can't be changed to suit the required location a user wants. This is better explained with an example:
 
 - I search for a property in Shipley on Rightmove.
