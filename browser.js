@@ -5,9 +5,8 @@ async function startBrowser(){
     try {
         console.log("Opening a browser..")
         browser = await pup.launch({
-            headless: true,
-            args: ["--no-sandbox"],
-            'ignoreHTTPSErrors': true
+            headless: false,
+            args: ['--no-sandbox', '--disable-setuid-sandbox']
         });
     }
     catch (err) {
