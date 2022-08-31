@@ -140,10 +140,10 @@ const clock = setInterval(searchURL, 240000)
 
 
 
-function sendProperty(address, type, bed, bath, pricePerMonth, pricePerWeek, link){
+function sendProperty(address, sortedInformation, pricePerMonth, pricePerWeek, link){
     try{
         if (propertiesChannel){
-            propertiesChannel.send(`**${address}**\n\n${type} | ${bed} | ${bath}\n\n**${pricePerMonth}**\n(${pricePerWeek})\n\nLink: ${link}`)
+            propertiesChannel.send(`**${address}**\n\n${sortedInformation}\n\n**${pricePerMonth}**\n(${pricePerWeek})\n\nLink: ${link}`)
         }
     }
     catch (err){
@@ -154,6 +154,6 @@ function sendProperty(address, type, bed, bath, pricePerMonth, pricePerWeek, lin
 }
 
 
-module.exports.sendProperty = (address, type, bed, bath, pricePerMonth, pricePerWeek, link) => sendProperty(address, type, bed, bath, pricePerMonth, pricePerWeek, link);
+module.exports.sendProperty = (address, sortedInformation, pricePerMonth, pricePerWeek, link) => sendProperty(address, sortedInformation, pricePerMonth, pricePerWeek, link);
 
 client.login(process.env.TOKEN)

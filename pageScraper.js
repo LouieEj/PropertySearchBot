@@ -1,3 +1,4 @@
+const { constants } = require("buffer");
 const fs = require("fs");
 const index = require("./index");
 
@@ -30,44 +31,47 @@ const scraperObj = {
                 propertyData['information'].shift();
             }
 
-            propertyData['types'] = [];
-            propertyData['beds'] = [];
-            propertyData['baths'] = [];
+            propertyData['sortedInformation'] = [];
             for (i = 0; i < propertyData['information'].length; i++){
                 splitInformation = propertyData['information'][i];
                 if (propertyData['information'][i].includes('|')){
                     splitInformation = propertyData['information'][i].split('|');
-                }
-                numBeds = 1
-                numBaths = 1
-                try{
+                    var sorted = "";
+                    numBeds = 1
+                    numBaths = 1
+                    try{
+                        if (splitInformation[1]){
+                            numBeds = splitInformation[1].split(' ')[0].length;
+                        }
+                        if (splitInformation[2]){
+                            numBaths = splitInformation[2].split(' ')[0].length;
+                        }
+                    }
+                    catch (err){
+                        console.log(err)
+                    }
+                    if (splitInformation[0]){
+                        sorted += splitInformation[0];
+                    }
+                    else{
+                        sorted += "Unspecified type of property";
+                    }
                     if (splitInformation[1]){
-                        numBeds = splitInformation[1].split(' ')[0].length;
+                        sorted += " | " + splitInformation[1].slice(0, -numBeds);
+                    }
+                    else{
+                        sorted += " | Unspecified number of bedrooms";
                     }
                     if (splitInformation[2]){
-                        numBaths = splitInformation[2].split(' ')[0].length;
+                        sorted += " | " + splitInformation[2].slice(0, -numBaths);
                     }
-                }
-                catch (err){
-                    console.log(err)
-                }
-                if (splitInformation[0]){
-                    propertyData['types'].push(splitInformation[0]);
+                    else{
+                        sorted += " | Unspecified number of bathrooms";
+                    }
+                    propertyData['sortedInformation'].push(sorted)
                 }
                 else{
-                    propertyData['baths'].push("Unspecified type of property");
-                }
-                if (splitInformation[1]){
-                    propertyData['beds'].push(splitInformation[1].slice(0, -numBeds));
-                }
-                else{
-                    propertyData['baths'].push("Unspecified number of bathrooms");
-                }
-                if (splitInformation[2]){
-                    propertyData['baths'].push(splitInformation[2].slice(0, -numBaths));
-                }
-                else{
-                    propertyData['baths'].push("Unspecified number of bathrooms");
+                    propertyData['sortedInformation'].push(splitInformation);
                 }
             }
 
@@ -111,8 +115,8 @@ const scraperObj = {
                             console.log(err);
                         }
                     });
-                index.sendProperty(propertyData['addresses'][i], propertyData['types'][i], propertyData['beds'][i], propertyData['baths'][i], propertyData['pricesPerMonth'][i], propertyData['pricesPerWeek'][i], propertyData['links'][i])
-                }
+                index.sendProperty(propertyData['addresses'][i], propertyData['sortedInformation'][i], propertyData['pricesPerMonth'][i], propertyData['pricesPerWeek'][i], propertyData['links'][i])
+            }
             }
         }
 }
