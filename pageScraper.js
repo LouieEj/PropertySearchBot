@@ -36,7 +36,6 @@ const scraperObj = {
                 }
                 catch (err){
                 }
-                console.log(splitInformation[2]);
                 if (splitInformation[0] != null && splitInformation[1] != null && splitInformation[2] != null){
                     propertyData['types'].push(splitInformation[0]);
                     propertyData['beds'].push(splitInformation[1].slice(0, -numBeds));
@@ -61,10 +60,6 @@ const scraperObj = {
             }));
             propertyData['links'] = propertyData['links'].filter(function(v, i){ return i % 2 == 0});
             propertyData['links'].shift();
-
-            for (i = 0; i < propertyData['links'].length; i++){
-                console.log(propertyData['links'][i]);
-            }
             
 
             var url;
