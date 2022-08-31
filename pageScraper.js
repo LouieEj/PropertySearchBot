@@ -12,13 +12,24 @@ const scraperObj = {
 
             let propertyData = {};
 
+            //check if there is a sponsored property
+            propertyData['sponsored'] = null;
+            try{
+                propertyData['sponsored'] = await page.waitForSelector('.propertyCard--featured');
+            }
+            catch{}
+
+
             //get the address of all properties
             propertyData['addresses'] = await page.$$eval('.propertyCard-address', addresses => addresses.map(address => address.textContent));
-            propertyData['addresses'].shift(); //remove the sponsored property (because it changes every search)
+
 
             //get the property information of all properties
             propertyData['information'] = await page.$$eval('.property-information', information => information.map(information => information.textContent));
-            propertyData['information'].shift();
+            
+            if (propertyData['sponsored']){
+                propertyData['information'].shift();
+            }
 
             propertyData['types'] = [];
             propertyData['beds'] = [];
@@ -31,26 +42,44 @@ const scraperObj = {
                 numBeds = 1
                 numBaths = 1
                 try{
-                    numBeds = splitInformation[1].split(' ')[0].length;
-                    numBaths = splitInformation[2].split(' ')[0].length;
+                    if (splitInformation[1]){
+                        numBeds = splitInformation[1].split(' ')[0].length;
+                    }
+                    if (splitInformation[2]){
+                        numBaths = splitInformation[2].split(' ')[0].length;
+                    }
                 }
                 catch (err){
+                    console.log(err)
                 }
-                if (splitInformation[0] != null && splitInformation[1] != null && splitInformation[2] != null){
+                if (splitInformation[0]){
                     propertyData['types'].push(splitInformation[0]);
+                }
+                else{
+                    propertyData['baths'].push("Unspecified type of property");
+                }
+                if (splitInformation[1]){
                     propertyData['beds'].push(splitInformation[1].slice(0, -numBeds));
+                }
+                else{
+                    propertyData['baths'].push("Unspecified number of bathrooms");
+                }
+                if (splitInformation[2]){
                     propertyData['baths'].push(splitInformation[2].slice(0, -numBaths));
+                }
+                else{
+                    propertyData['baths'].push("Unspecified number of bathrooms");
                 }
             }
 
 
             //get the prices of all properties per month
             propertyData['pricesPerMonth'] = await page.$$eval('.propertyCard-priceValue', pricesPerMonth => pricesPerMonth.map(price => price.textContent));
-            propertyData['pricesPerMonth'].shift();
+            
             
             //get the prices of all properties per week
             propertyData['pricesPerWeek'] = await page.$$eval('.propertyCard-secondaryPriceValue', pricesPerWeek => pricesPerWeek.map(price => price.textContent));
-            propertyData['pricesPerWeek'].shift();
+            
 
             //get the links of all properties
             propertyData['links'] = await page.$$eval('.propertyCard-link', links => links.map(link => {
@@ -59,8 +88,14 @@ const scraperObj = {
                 }
             }));
             propertyData['links'] = propertyData['links'].filter(function(v, i){ return i % 2 == 0});
-            propertyData['links'].shift();
             
+
+            if (propertyData['sponsored']){
+                propertyData['addresses'].shift(); //remove the sponsored property (because it changes every search)
+                propertyData['pricesPerMonth'].shift();
+                propertyData['pricesPerWeek'].shift();
+                propertyData['links'].shift();
+            }
 
             var url;
             var json = require('./settings.json');
@@ -70,7 +105,7 @@ const scraperObj = {
             var text = fs.readFileSync("./foundProperties.txt").toString('utf-8');
             var textByLine = text.split(/\r\n|\n/);
             
-            for (i = 0; i < propertyData['links'].length; i++){
+            for (i = 0; i < propertyData['information'].length; i++){
                 if (!textByLine.includes(propertyData['links'][i])){
                     fs.appendFile('./foundProperties.txt', propertyData['links'][i] + "\n", function(err){
                         if (err){

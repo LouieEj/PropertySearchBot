@@ -70,7 +70,7 @@ client.on("message", message => {
         const args = message.content.slice(prefix.length).trim().split(' ');
         const command = args.shift().toLowerCase();
         if (command == "help"){
-                  reply(message, "**PropertySearchBot Help Guide:**\n**MAKE SURE TO HAVE A CHANNEL CALLED properties (make sure it is lower-case). BOT WON'T WORK WITHOUT THIS!**\n\n**Rightmove commands:**\nNOTE: To search with Rightmove, you must first go to Rightmove on a web-browser, search for properties in an area and add any filters you want, and then copy the URL.\n• **!update rightmove *url*** - This will update the bot to start searching **Rightmove** properties based on the URL you provided.")
+                  reply(message, "**PropertySearchBot Help Guide:**\n**MAKE SURE TO HAVE A CHANNEL CALLED properties (make sure it is lower-case). BOT WON'T WORK WITHOUT THIS!**\n\n**Rightmove commands:**\nNOTE: To search with Rightmove, you must first go to Rightmove on a web-browser, search for properties in an area and add any filters you want, and then copy the URL.\n• **!update rightmove *url*** - This will update the bot to start searching **Rightmove** properties based on the URL you provided.\n• **!search rightmove** - This will force the bot to search **Rightmove** properties based on the URL you have provided. The bot automatically searches every 4 minutes, but this command allows you to manually force the bot to make a new search.")
         }
         if (command == "update"){
             if (!args.length){
@@ -88,6 +88,15 @@ client.on("message", message => {
                 else{
                     reply(message, "You must provide a URL to update the search for Rightmove properties!");
                 }
+            }
+        }
+        if (command == "search"){
+            if (!args.length){
+                return reply(message, "You must say which service you want to force a search from.\n\n*Example:*\n!search rightmove");
+            }
+            if (args[0] == "rightmove"){
+                reply(message, "Forcing a search on Rightmove!");
+                searchURL();
             }
         }
     }
@@ -108,10 +117,11 @@ async function updateURL(updateUrl, message){
         await fs.writeFileSync('./settings.json', JSON.stringify(settingsObj));
         
         reply(message, "Successfully updated the URL!");
+        searchURL();
     }
     catch (err){
         console.log(err);
-        reply(message, "Error updating URL");
+        reply(message, "Error updating URL: " + err);
     }
 
 }
@@ -126,7 +136,7 @@ function searchURL(){
 }
 
 searchURL();
-const clock = setInterval(searchURL, 60000)
+const clock = setInterval(searchURL, 240000)
 
 
 
