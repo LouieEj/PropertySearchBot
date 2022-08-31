@@ -4,7 +4,6 @@ const index = require("./index");
 const scraperObj = {
         async scraper(browser, url){
             let page = await browser.newPage();
-            console.log(`Navigating to ${url}...`);
             await page.goto(url);
 
             //wait for the required part of the page to be rendered
